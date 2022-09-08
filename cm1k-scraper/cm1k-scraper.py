@@ -22,6 +22,7 @@
 
 import requests
 import pandas as pd
+from os.path import exists
 from time import sleep
 
 ###################################################
@@ -101,9 +102,11 @@ while attempts <= 10 and success == False:
             
             outfile = outfolder + '\\' + df + '.csv'
             
-            # Save to a CSV file in append mode 
-            df_dict[df].to_csv(outfile, mode='a')
-        
+            # Do not add a header if the file exists
+            header = False if exists(outfile) else True
+                
+            df_dict[df].to_csv(outfile, mode='a', header=header)
+                
     else:
         print('Fail. Status code: ' + str(resp.status_code) )
         
