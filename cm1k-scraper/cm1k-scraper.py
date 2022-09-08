@@ -56,7 +56,7 @@ while attempts <= 10 and success == False:
 
         success = True
         now     = pd.Timestamp.now().round('30min') # Round to the nearest 30 minutes
-        i       = 3 # Data ranges from tables 3-5
+        i       = 3 # Data ranges from tables 4-6
         
         # Create three DataFrames: QAM, Upload, and OFDM
         df_dict = {'df_qam_channel_status':    pd.DataFrame(),
