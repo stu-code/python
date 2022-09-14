@@ -70,18 +70,22 @@ while attempts <= 10 and success == False:
             
             #Read data from table
             df_dict[df] = pd.read_html(resp.content, header=[0], index_col=[0])[i]
+            #df_dict[df] = df_dict[df][df_dict[df]['lock_status'] == 'Locked']
             
             #Add a timestamp
             df_dict[df]['timestamp'] = now
             
-            # Convert frequency, power, SNR/MER to int. NOTE: SNR/MER does not exist
+            # Convert Power and SNR/MER to int. NOTE: SNR/MER does not exist
             # for upload. The try block takes care of this.
-            for col in ['Frequency', 'Power', 'SNR / MER']:
+            for col in ['Power', 'SNR / MER']:
                 try:
-                    df_dict[df][col] = df_dict[df][col].str.extract('(\d+)').astype('int')
+                    df_dict[df][col] = df_dict[df][col].str.extract('(\d+\.\d+)').astype('float')
                 except:
                     pass
         
+            # Store frequency as an int
+            df_dict[df]['Frequency'] = df_dict[df]['Frequency'].str.extract('(\d+)').astype('int')
+            
             # Rename columns to be more logical
             df_dict[df] = df_dict[df].rename(columns={'Frequency': 'frequency_hz',
                                                       'Power':     'power_dbmv',
@@ -105,7 +109,7 @@ while attempts <= 10 and success == False:
             # Do not add a header if the file exists
             header = False if exists(outfile) else True
                 
-            df_dict[df].to_csv(outfile, mode='a', header=header)
+            df_dict[df].to_csv(outfile, float_format='%.1f', mode='a', header=header)
                 
     else:
         print('Fail. Status code: ' + str(resp.status_code) )
